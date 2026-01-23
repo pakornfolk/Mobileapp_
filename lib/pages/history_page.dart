@@ -23,7 +23,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Future<List<dynamic>> _getHistory() async {
     final res = await http.get(
       Uri.parse(
-        'http://localhost:3000/report-history/${widget.studentId}',
+        'http://10.0.2.2:3000/report-history/${widget.studentId}',
       ),
     );
 

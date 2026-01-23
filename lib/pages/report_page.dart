@@ -33,7 +33,7 @@ class _ReportPageState extends State<ReportPage> {
     try {
       // 2. ส่งข้อมูลไปยัง Backend
       final response = await http.post(
-        Uri.parse('http://localhost:3000/report'), // ถ้าเทสในมือถือจริงให้ใช้ IP เครื่อง
+        Uri.parse('http://10.0.2.2:3000/report'), // ถ้าเทสในมือถือจริงให้ใช้ IP เครื่อง
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "student_id": widget.studentId,

@@ -12,7 +12,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _idController = TextEditingController();
   final _nameController = TextEditingController();
   final _passController = TextEditingController();
-  String _selectedFaculty = 'ICT'; // ค่าเริ่มต้น
+  String _selectedFaculty = 'ICT';
 
   Future<void> register() async {
     if (_idController.text.isEmpty || _nameController.text.isEmpty || _passController.text.isEmpty) {
@@ -22,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/register'), // อย่าลืมเช็ค IP
+        Uri.parse('http://10.0.2.2:3000/register'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "student_id": _idController.text,
@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final data = jsonDecode(response.body);
       if (data['success']) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ")));
-        Navigator.pop(context); // ลงทะเบียนเสร็จให้กลับไปหน้า Login
+        Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(data['message'])));
       }
@@ -46,32 +46,88 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDarkMode 
+        ? Colors.white54 
+        : const Color.fromARGB(255, 22, 48, 141);
+
     return Scaffold(
       appBar: AppBar(title: const Text("ลงทะเบียนนักศึกษาใหม่")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(30.0),
         child: Column(
           children: [
-            const Icon(Icons.person_add, size: 80, color: Color.fromARGB(255, 22, 48, 141)),
+            const Icon(Icons.person_add, size: 80, color: Colors.green),
             const SizedBox(height: 20),
-            TextField(controller: _idController, decoration: const InputDecoration(labelText: "รหัสนักศึกษา", border: OutlineInputBorder())),
+            
+            _buildTextField(_idController, "รหัสนักศึกษา", Icons.badge, isDarkMode, borderColor),
             const SizedBox(height: 15),
-            TextField(controller: _nameController, decoration: const InputDecoration(labelText: "ชื่อ-นามสกุล", border: OutlineInputBorder())),
+            _buildTextField(_nameController, "ชื่อ-นามสกุล", Icons.person, isDarkMode, borderColor),
             const SizedBox(height: 15),
-            TextField(controller: _passController, obscureText: true, decoration: const InputDecoration(labelText: "รหัสผ่าน", border: OutlineInputBorder())),
+            _buildTextField(_passController, "รหัสผ่าน", Icons.lock, isDarkMode, borderColor, isObscure: true),
             const SizedBox(height: 15),
+            
+            // Dropdown ปรับให้เข้ากับธีม
             DropdownButtonFormField<String>(
               value: _selectedFaculty,
-              decoration: const InputDecoration(border: OutlineInputBorder(), labelText: "คณะ"),
-              items: ['ICT', 'EG', 'SC', 'EN', 'SS', 'LA','PT','CRS','MS','IC','NS','MT','NR','VS','PH','SH' ,'TM'].map((f) => DropdownMenuItem(value: f, child: Text(f))).toList(),
+              decoration: InputDecoration(
+                labelText: "คณะ",
+                labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : borderColor),
+                prefixIcon: Icon(Icons.school, color: borderColor),
+                filled: true,
+                fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: borderColor, width: 1.5),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: borderColor, width: 2.5),
+                ),
+              ),
+              items: ['ICT', 'EG', 'SC', 'EN', 'SS', 'LA','PT','CRS','MS','IC','NS','MT','NR','VS','PH','SH' ,'TM']
+                  .map((f) => DropdownMenuItem(value: f, child: Text(f)))
+                  .toList(),
               onChanged: (v) => setState(() => _selectedFaculty = v!),
             ),
+            
             const SizedBox(height: 30),
+            
             SizedBox(
-              width: double.infinity, height: 50,
-              child: ElevatedButton(onPressed: register, style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 22, 48, 141)), child: const Text("ยืนยันการลงทะเบียน", style: TextStyle(color: Colors.white))),
+              width: double.infinity, 
+              height: 55,
+              child: ElevatedButton(
+                onPressed: register, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 22, 48, 141),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                ), 
+                child: const Text("ยืนยันการลงทะเบียน", style: TextStyle(color: Colors.white, fontSize: 18)),
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, bool isDark, Color borderColor, {bool isObscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: isObscure,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: borderColor),
+        labelStyle: TextStyle(color: isDark ? Colors.white70 : borderColor),
+        filled: true,
+        fillColor: isDark ? Colors.grey[900] : Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: borderColor, width: 2.5),
         ),
       ),
     );

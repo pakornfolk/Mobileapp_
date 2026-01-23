@@ -18,11 +18,10 @@ class InfoPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // ====== HEADER ======
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: dark ? Colors.green.shade900 : Colors.green.shade50,
+              color: dark ? const Color.fromARGB(255, 46, 153, 51) : Colors.green.shade50,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(

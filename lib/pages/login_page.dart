@@ -1,9 +1,12 @@
+// login_page.dart (ฉบับเต็ม - ปรับปรุง UI และแก้เส้นขอบ)
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../main.dart';
 import 'register_page.dart';
+import 'forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/login'),
+        Uri.parse('http://10.0.2.2:3000/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'student_id': _idController.text.trim(),
@@ -54,9 +57,7 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => MainNavigation(studentId: studentId),
-        ),
+        MaterialPageRoute(builder: (_) => MainNavigation(studentId: studentId)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -70,21 +71,22 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // 🔒 ล็อคพื้นหลังขาว
-      backgroundColor: Colors.white,
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
+    // ✅ กำหนดสีเส้นขอบตามโหมด
+    final borderColor = isDarkMode 
+        ? Colors.white54 
+        : const Color.fromARGB(255, 22, 48, 141);
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
         child: Column(
           children: [
-            const Icon(
-              Icons.eco,
-              size: 100,
-              color: Colors.green,
-            ),
+            const Icon(Icons.eco, size: 100, color: Colors.green),
             const SizedBox(height: 20),
-
             const Text(
               "MU Green & Clean",
               style: TextStyle(
@@ -94,27 +96,32 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 10),
-
-            const Text(
+            Text(
               "มหาวิทยาลัยสีเขียว เริ่มต้นที่ตัวคุณ",
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+              ),
             ),
-
             const SizedBox(height: 40),
 
             // ===== รหัสนักศึกษา =====
             TextField(
               controller: _idController,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "รหัสนักศึกษา",
-                labelStyle: const TextStyle(color: Colors.black87),
-                prefixIcon: const Icon(Icons.badge, color: Color.fromARGB(255, 58, 57, 57)),
+                labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : borderColor),
+                prefixIcon: Icon(Icons.badge, color: borderColor),
                 filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
+                fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+                // ✅ เอากรอบกลับมา
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: borderColor, width: 1.5),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: borderColor, width: 2.5),
                 ),
               ),
             ),
@@ -125,15 +132,42 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _passController,
               obscureText: true,
-              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "รหัสผ่าน",
-                labelStyle: const TextStyle(color: Colors.black87),
-                prefixIcon: const Icon(Icons.lock, color: Colors.grey),
+                labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : borderColor),
+                prefixIcon: Icon(Icons.lock, color: borderColor),
                 filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
+                fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
+                // ✅ เอากรอกกลับมา
+                enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: borderColor, width: 1.5),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: borderColor, width: 2.5),
+                ),
+              ),
+            ),
+
+            // ===== ลืมรหัสผ่าน (ครบถ้วน ไม่หาย!) =====
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+                  );
+                },
+                child: Text(
+                  "ลืมรหัสผ่าน?",
+                  style: TextStyle(
+                    color: isDarkMode 
+                        ? Colors.amber.withOpacity(0.8) 
+                        : const Color.fromARGB(255, 22, 48, 141),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -171,16 +205,15 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const RegisterPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const RegisterPage()),
                 );
               },
-              child: const Text(
+              child: Text(
                 "ยังไม่มีบัญชี? ลงทะเบียนที่นี่",
                 style: TextStyle(
-                  color: Color.fromARGB(255, 22, 48, 141),
-                  fontWeight: FontWeight.bold,
+                  color: isDarkMode 
+                      ? Colors.amber 
+                      : const Color.fromARGB(255, 22, 48, 141),
                 ),
               ),
             ),

@@ -36,7 +36,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     try {
       final res = await http.post(
-        Uri.parse('http://localhost:3000/reset-password'),
+        Uri.parse('http://10.0.2.2:3000/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'student_id': _idController.text.trim(),
@@ -80,53 +80,66 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDarkMode 
+        ? Colors.white54 
+        : const Color.fromARGB(255, 22, 48, 141);
+
     return Scaffold(
       appBar: AppBar(title: const Text('ลืมรหัสผ่าน')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(30),
         child: Column(
           children: [
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'รหัสนักศึกษา',
-                border: OutlineInputBorder(),
-              ),
-            ),
+            const Icon(Icons.lock_reset, size: 80, color: Colors.green),
+            const SizedBox(height: 30),
+            
+            _buildTextField(_idController, 'รหัสนักศึกษา', Icons.badge, isDarkMode, borderColor, TextInputType.number),
             const SizedBox(height: 15),
-
-            TextField(
-              controller: _newPassController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'รหัสผ่านใหม่',
-                border: OutlineInputBorder(),
-              ),
-            ),
+            _buildTextField(_newPassController, 'รหัสผ่านใหม่', Icons.lock_outline, isDarkMode, borderColor, TextInputType.text, isObscure: true),
             const SizedBox(height: 15),
-
-            TextField(
-              controller: _confirmPassController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'ยืนยันรหัสผ่านใหม่',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 25),
+            _buildTextField(_confirmPassController, 'ยืนยันรหัสผ่านใหม่', Icons.lock_clock, isDarkMode, borderColor, TextInputType.text, isObscure: true),
+            
+            const SizedBox(height: 30),
 
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 55,
               child: ElevatedButton(
                 onPressed: _loading ? null : resetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 22, 48, 141),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                ),
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('ยืนยันเปลี่ยนรหัสผ่าน'),
+                    : const Text('ยืนยันเปลี่ยนรหัสผ่าน', style: TextStyle(color: Colors.white, fontSize: 18)),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, bool isDark, Color borderColor, TextInputType type, {bool isObscure = false}) {
+    return TextField(
+      controller: controller,
+      obscureText: isObscure,
+      keyboardType: type,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: borderColor),
+        labelStyle: TextStyle(color: isDark ? Colors.white70 : borderColor),
+        filled: true,
+        fillColor: isDark ? Colors.grey[900] : Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: borderColor, width: 2.5),
         ),
       ),
     );

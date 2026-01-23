@@ -37,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadProfile() async {
     try {
       final res = await http.get(
-        Uri.parse('http://localhost:3000/user-profile/${widget.studentId}')
+        Uri.parse('http://10.0.2.2:3000/user-profile/${widget.studentId}')
       );
 
       if (res.statusCode == 200) {
