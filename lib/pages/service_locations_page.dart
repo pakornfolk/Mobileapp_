@@ -37,13 +37,8 @@ class _ServiceListPageState extends State<ServiceListPage> {
       appBar: AppBar(
         title: const Text(
           "จุดบริการในมหาวิทยาลัย",
-          style: TextStyle(
-            fontSize: 18,            
-            fontWeight: FontWeight.bold, 
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFF00A651),
-        foregroundColor: Colors.white, // ปรับสีตัวอักษรใน AppBar
         centerTitle: true,
       ),
       body: FutureBuilder<List<dynamic>>(

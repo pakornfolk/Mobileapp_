@@ -47,7 +47,7 @@ app.post('/login', (req, res) => {
       });
     }
 
-    // ✅ ส่ง response ให้ตรงกับ Flutter 100%
+    //  ส่ง response ให้ตรงกับ Flutter 100%
     return res.status(200).json({
       success: true,
       user: {
@@ -68,6 +68,71 @@ app.post('/register', (req, res) => {
         if (err) return res.status(500).json({ success: false, message: 'มีบัญชีผู้ใช้แล้ว' });
         res.json({ success: true });
     });
+});
+
+// Reset Password API 
+app.post('/reset-password', (req, res) => {
+  const { student_id, new_password } = req.body;
+
+  if (!student_id || !new_password) {
+    return res.status(400).json({
+      success: false,
+      message: 'ข้อมูลไม่ครบ',
+    });
+  }
+
+  db.query(
+    'SELECT * FROM users WHERE student_id = ?',
+    [student_id],
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ success: false });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'ไม่พบนักศึกษา',
+        });
+      }
+
+      db.query(
+        'UPDATE users SET password = ? WHERE student_id = ?',
+        [new_password, student_id],
+        (err2) => {
+          if (err2) {
+            console.error(err2);
+            return res.status(500).json({ success: false });
+          }
+
+          res.json({
+            success: true,
+            message: 'เปลี่ยนรหัสผ่านเรียบร้อย',
+          });
+        }
+      );
+    }
+  );
+});
+
+app.get('/users', (req, res) => {
+  const sql = `
+    SELECT student_id, username, faculty, point
+    FROM users
+    ORDER BY point DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ success: false });
+    }
+
+    res.json({
+      success: true,
+      users: results,
+    });
+  });
 });
 
 // 3. Real-time User Profile API

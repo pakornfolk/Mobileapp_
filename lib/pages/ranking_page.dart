@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'report_page.dart'; 
 
 class RankingPage extends StatefulWidget {
-  final String studentId; // 👈 รับ studentId มาจากหน้าอื่น
+  final String studentId; 
 
   const RankingPage({super.key, required this.studentId});
 
@@ -103,13 +103,19 @@ class _RankingPageState extends State<RankingPage> {
                       final isMe = user['student_id'] == widget.studentId;
 
                       return Card(
-                        color: isMe ? Colors.green.shade50 : null, // 👈 ไฮไลต์ตัวเอง
+                        color: isMe ? const Color.fromARGB(255, 0, 0, 0) : null, // 👈 ไฮไลต์ตัวเอง
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: index == 0
                                 ? Colors.amber
                                 : Colors.green.shade100,
-                            child: Text("${index + 1}"),
+                            child: Text(
+                              "${index + 1}",
+                              style: const TextStyle(
+                                color: Colors.black, // 🔒 ล็อคเลขให้ดำ
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           title: Text(
                             "${user['username']} (${user['faculty']})",
@@ -122,7 +128,6 @@ class _RankingPageState extends State<RankingPage> {
                             "${user['point']} pts",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
                             ),
                           ),
                         ),

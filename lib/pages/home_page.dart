@@ -82,6 +82,7 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
                       ),
 
@@ -100,6 +101,7 @@ class _HomePageState extends State<HomePage> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
+                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -124,6 +126,7 @@ class _HomePageState extends State<HomePage> {
                         Colors.orange,
                         ReportPage(studentId: widget.studentId),
                         true,
+                        
                       ),
                       _buildMenuCard(
                         context,
@@ -132,6 +135,7 @@ class _HomePageState extends State<HomePage> {
                         Colors.blue,
                         HistoryPage(studentId: widget.studentId),
                         false,
+                        
                       ),
                       _buildMenuCard(
                         context,
@@ -140,6 +144,7 @@ class _HomePageState extends State<HomePage> {
                         Colors.green,
                         const InfoPage(),
                         false,
+                    
                       ),
                       _buildMenuCard(
                         context,
@@ -194,7 +199,10 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 12),
             Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
           ],
         ),

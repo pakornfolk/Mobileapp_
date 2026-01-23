@@ -19,6 +19,12 @@ CREATE TABLE users (
     point INT DEFAULT 0,
     faculty VARCHAR(100)
 );
+SELECT *
+FROM users
+ORDER BY point DESC; -- เรียงลำดับรายชื่อตาม point ตากมากไปน้อย ถ้าน้อยไปมากจะใช้ ASC
+
+DELETE FROM users
+WHERE id = 5; -- ลบข้อมูลในตาราง
 
 -- เพิ่มข้อมูลนักศึกษาตัวอย่างสำหรับทดสอบ Login
 INSERT INTO users (student_id, username, password, point, faculty) VALUES 

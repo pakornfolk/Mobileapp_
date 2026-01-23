@@ -94,7 +94,6 @@ class _ReportPageState extends State<ReportPage> {
                   "ยืนยันการส่งรายงาน",
                   style: TextStyle(
                     fontSize: 15,
-                    color: Color.fromARGB(255, 22, 48, 141),
                   ),
                 ), // วงเล็บปิด Text ต้องอยู่หลัง TextStyle
               ),

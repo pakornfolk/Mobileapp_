@@ -12,7 +12,6 @@ class AnnouncementPage extends StatelessWidget {
       'icon': Icons.park,
       'color': Colors.green,
     },
-
     {
       'title': 'ปิดปรับปรุงสนามฟุตซอล',
       'detail': 'ซ่อมแซมสนามฟุตบอลบริเวณลานกีฬาสุขภาพ',
@@ -21,7 +20,6 @@ class AnnouncementPage extends StatelessWidget {
       'icon': Icons.block,
       'color': Colors.red,
     },
-
     {
       'title': 'ซ่อมแซมตู้กดน้ำ',
       'detail': 'ปิดปรับปรุงตู้กดน้ำ อาคาร MLC',
@@ -42,19 +40,22 @@ class AnnouncementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
+
       appBar: AppBar(
         title: const Text(
           "ประกาศ",
-          style: TextStyle(fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontSize: 18
-          )
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF00A651),
       ),
+
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: announcements.length,
@@ -64,6 +65,7 @@ class AnnouncementPage extends StatelessWidget {
           return Card(
             elevation: 3,
             margin: const EdgeInsets.only(bottom: 16),
+            color: colorScheme.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -88,22 +90,23 @@ class AnnouncementPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
 
-                  // content
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           item['title'],
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           item['detail'],
-                          style: const TextStyle(color: Colors.black87),
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Row(
@@ -126,8 +129,9 @@ class AnnouncementPage extends StatelessWidget {
                             const Spacer(),
                             Text(
                               item['date'],
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface.withOpacity(0.6),
+                              ),
                             ),
                           ],
                         ),

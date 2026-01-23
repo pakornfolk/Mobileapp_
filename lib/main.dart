@@ -1,24 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'pages/home_page.dart';
 import 'pages/service_locations_page.dart';
 import 'pages/announcement_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/login_page.dart';
+import 'pages/settings_page.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MaterialApp(
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  void changeTheme(ThemeMode mode) {
+    setState(() {
+      _themeMode = mode;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       title: 'MU Clean & Green',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        textTheme: GoogleFonts.kanitTextTheme(),
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: _themeMode,
       home: const LoginPage(),
-    ),
-  );
+    );
+  }
 }
 
 class MainNavigation extends StatefulWidget {
@@ -41,6 +65,7 @@ class _MainNavigationState extends State<MainNavigation> {
       HomePage(studentId: widget.studentId),
       const ServiceListPage(),
       const AnnouncementPage(),
+      const SettingsPage(),
       ProfilePage(studentId: widget.studentId),
     ];
   }
@@ -48,17 +73,19 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _pages),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
-        selectedItemColor: Color.fromARGB(255, 22, 48, 141),
-        unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'หน้าแรก'),
           BottomNavigationBarItem(icon: Icon(Icons.place), label: 'จุดบริการ'),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'ประกาศ'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'การตั้งค่า'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'โปรไฟล์'),
         ],
       ),
