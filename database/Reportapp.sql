@@ -23,9 +23,6 @@ SELECT *
 FROM users
 ORDER BY point DESC; -- เรียงลำดับรายชื่อตาม point ตากมากไปน้อย ถ้าน้อยไปมากจะใช้ ASC
 
-DELETE FROM users
-WHERE id = 5; -- ลบข้อมูลในตาราง
-
 -- เพิ่มข้อมูลนักศึกษาตัวอย่างสำหรับทดสอบ Login
 INSERT INTO users (student_id, username, password, point, faculty) VALUES 
 ('6787052', 'Pakornkiat Vonma', '123456', 80,'ICT'),
@@ -40,26 +37,43 @@ CREATE TABLE service_locations (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 INSERT INTO service_locations 
 (service_name, service_type, building, note)
 VALUES
 ('ตู้กดน้ำ ', 'Water', 'อาคาร ICT','ชั้น1'),
-('ตู้กดน้ำสะอาด', 'Water', 'อาคาร MLC', 'หน้าทางเข้าห้องน้ำ ชั้น1'),
-('จุดคัดแยกขยะ', 'Waste', 'หอสมุดและคลังความรู้ ','หน้าทางเข้าห้องสมุด');
+('ตู้กดน้ำสะอาด', 'Water', 'อาคาร MLC', 'ใกล้จุดคืนภาชนะใส่อาหาร'),
+('ตู้กดน้ำ ', 'Water', 'คณะศิลปะศาสตร์','จำนวน 2 ตู้ บริเวณชั้น1 ใกล้กับห้องน้ำ'),
+('ตู้กดน้ำ ', 'Water', 'อุุทยานธรรมชาติวิทยาสิริรุกขชาติ','บริเวณทางเข้าด้านใน'),
+('ตู้กดน้ำ ', 'Water', 'ลานดอกกันภัย','ติดกับผนังกำแพง'),
 
-UPDATE service_locations
-SET service_type = 'Waste',
-	service_name = 'จุดคัดแยกขยะ'
-WHERE id = 2;
+('จุดคัดแยกขยะ', 'Waste', 'หอสมุดและคลังความรู้ ','หน้าทางเข้าห้องสมุด'),
+('จุดคัดแยกขยะ', 'Waste', 'สถาบันชีววิทยาศาสตร์โมเลกุล', ' บริเวณป้าย Bus stop'),
+('จุดคัดแยกขยะ','Waste',' ป้าย Bus stop','บริเวณประตู 4'),
+('จุดคัดแยกขยะ','Waste','คณะศิลปะศาสตร์','บริเวณหน้าห้องน้ำชั้น 2'),
+('จุดคัดแยกขยะ','Waste','คณะวิทยาศาสตร์','บริเวณป้าย Bus stop'),
+('จุดคัดแยกขยะ','Waste','อาคารจอดรถสิทธาคาร','บริเวณป้าย Bus stop'),
+('จุดคัดแยกขยะ','Waste','ศูนย์อาหาร MLC','บริเวณจุดคือภาชนะใส่อาหาร'),
+('จุดคัดแยกขยะ','Waste','อาคาร MLC','บริเวณหน้าห้องนิทรรศการ'),
+('จุดคัดแยกขยะ','Waste','อาคาร MLC','หน้าห้องชมรมภาษาอังกฤษ'),
+('จุดคัดแยกขยะ','Waste','อาคาร MLC','หน้าห้องน้ำชายชั้น 1'),
+('จุดคัดแยกขยะ','Waste','อาคาร MLC','หน้าร้านสะดวกซื้อ 7-11'),
+('จุดคัดแยกขยะ','Waste','อาคาร MLC','บริเวณ True Lab ชั้น2');
+
+insert into service_locations (service_name,service_type,building,note)
+value
+('สนามเทนนิส','Other','Tennis court','ใกล้กับคณะศิลปะศาสตร์');
+
+insert into service_locations (service_name,service_type,building)
+value
+('สนามวอลเลย์บอล1', 'Other', 'ลานกีฬาเพื่อสุขภาพ'),
+('สนามบาสเกตบอล1,2', 'Other', 'ลานกีฬาเพื่อสุขภาพ'),
+('สนามบาสเกตบอล', 'Other', 'โรงช้าง'),
+('สนามวอลเลย์บอล', 'Other', 'โรงช้าง');
 
 
 select * from reports;
 select * from service_locations;
 select * from users;
-
-DESCRIBE users;
-
 
 CREATE USER 'user'@'localhost' IDENTIFIED BY 'pakorn2549';
 GRANT ALL PRIVILEGES ON reportapp.* TO 'user'@'localhost';

@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String _generateRedeemCode(String studentId) {
   // ใช้แค่ studentId มาทำ Hash รหัสจะออกมาเหมือนเดิมทุกครั้งสำหรับ ID นี้
-  var seed = studentId.hashCode.toString().padRight(13, '7').substring(0, 13);
+  var seed = studentId.hashCode.abs().toString().padRight(10, '0').substring(0, 10);
   return seed;
 }
 
@@ -119,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: const Icon(Icons.token, color: Colors.amber, size: 25),
                 title: const Text(
                   "คะแนนสะสมของคุณ",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 trailing: Text(
                   "${user!['point']} pts",
@@ -136,7 +136,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: const Icon(Icons.info_outline, color: Colors.grey),
                 title: const Text(
                   "กฎการสะสมคะแนน",
-                  style: TextStyle(fontSize: 14),
+                  style: 
+                  TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
@@ -149,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const Divider(),
 
-              // 🎟️ ส่วนของ Redeem Code (Barcode Card) - แก้ไขตรงนี้
+              //Redeem Code 
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Container(
@@ -184,9 +188,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Text(
                         _generateRedeemCode(widget.studentId),
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 16,
                           letterSpacing: 4,
-                          fontWeight: FontWeight.bold,
                           color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
@@ -205,7 +208,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ListTile(
                 leading: const Icon(Icons.history, color: Colors.blue),
                 title: const Text("ประวัติการแจ้งปัญหา"),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -253,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// 📖 หน้ากฎการสะสมคะแนน
+// อันนี้คือหน้ากฎการสะสมคะแนน
 class RulesPage extends StatelessWidget {
   const RulesPage({super.key});
 
@@ -261,14 +263,19 @@ class RulesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final TextStyle ruleStyle = TextStyle(
-      fontSize: 16,
+      fontSize: 14,
       fontWeight: FontWeight.w300, 
-      color: isDarkMode ? Colors.white : Colors.grey[800],
+      color: isDarkMode ? Colors.white : const Color.fromARGB(255, 52, 51, 51),
     );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("กฎการสะสมคะแนน", style: TextStyle(fontSize: 18)),
+        title: const Text("กฎการสะสมคะแนน", 
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          ),
+
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -276,17 +283,17 @@ class RulesPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("• แจ้งปัญหาขยะ/น้ำเสีย รับ 10 คะแนน", style: ruleStyle),
+            Text("• แจ้งปัญหาต่างๆ รับ 10 คะแนน", style: ruleStyle),
             const SizedBox(height: 15),
             Text("• จำกัดสิทธิ์การรับคะแนนสูงสุด 3 ครั้งต่อวัน", style: ruleStyle),
             const SizedBox(height: 15),
-            Text("• คะแนนจะอัปเดตเข้าสู่ระบบโดยอัตโนมัติ", style: ruleStyle),
+            Text("• คะแนนจะอัปเดตเข้าสู่บัญชีของนักศึกษาโดยอัตโนมัติ", style: ruleStyle),
             const SizedBox(height: 15),
             Text("• สามารถแสดงรหัส Redeem เพื่อแลกรางวัล ณ สำนักงาน", style: ruleStyle),
             const SizedBox(height: 30),
             const Text(
-              "* เงื่อนไขเป็นไปตามที่มหาวิทยาลัยกำหนด",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              "* หมายเหตุ หากพบว่ามีการปั่นคะแนนเกิดขึ้น หรือ แจ้งข้อมูลอันเป็นเท็จ ทางเราขอทำการตัดแต้มครึ่งนึงจากจำนวนเเต้มทั้งหมด เงื่อนไขเป็นไปตามที่มหาวิทยาลัยกำหนด",
+              style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 149, 148, 148)),
             ),
           ],
         ),

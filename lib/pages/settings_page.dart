@@ -7,7 +7,14 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('การตั้งค่า')),
+      appBar: AppBar(title: const Text(
+        'การตั้งค่า',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+        ),
+      ),
+      centerTitle: true, // ✅ จัดให้อยู่ตรงกลาง
+      ),
       body: Column(
         children: [
           ListTile(

@@ -10,39 +10,83 @@ class ServiceListPage extends StatefulWidget {
 }
 
 class _ServiceListPageState extends State<ServiceListPage> {
-  late Future<List<dynamic>> _services;
+  late Future<Map<String, List<dynamic>>> _groupedServices;
 
   @override
   void initState() {
     super.initState();
-    _services = _fetchServices();
+    _servicesRequest();
   }
 
-  Future<List<dynamic>> _fetchServices() async {
-    
+  void _servicesRequest() {
+    setState(() {
+      _groupedServices = _fetchAndGroupServices();
+    });
+  }
+
+  Future<Map<String, List<dynamic>>> _fetchAndGroupServices() async {
+    // 💡 ใช้ 10.0.2.2 สำหรับ Android Emulator / localhost สำหรับ iOS
     final res = await http.get(
       Uri.parse('http://localhost:3000/service-locations'),
     );
 
     if (res.statusCode == 200) {
-      return json.decode(res.body);
+      List<dynamic> data = json.decode(res.body);
+      
+      Map<String, List<dynamic>> grouped = {};
+      for (var item in data) {
+        String type = item['service_type'] ?? 'Other';
+        if (grouped[type] == null) {
+          grouped[type] = [];
+        }
+        grouped[type]!.add(item);
+      }
+      return grouped;
     } else {
       throw Exception('โหลดข้อมูลไม่สำเร็จ');
     }
   }
 
+  Widget _buildCategoryHeader(String type, ThemeData theme) {
+    String title = "อื่นๆ";
+    if (type == 'Water') title = "ตู้กดน้ำ";
+    if (type == 'Waste') title = "จุดแยกขยะ";
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      child: Row(
+        children: [
+          Expanded(child: Divider(indent: 15, endIndent: 10, thickness: 1, color: theme.dividerColor)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                color: theme.colorScheme.secondary,
+              ),
+            ),
+          ),
+          Expanded(child: Divider(indent: 10, endIndent: 15, thickness: 1, color: theme.dividerColor)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           "จุดบริการในมหาวิทยาลัย",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<dynamic>>(
-        future: _services,
+      body: FutureBuilder<Map<String, List<dynamic>>>(
+        future: _groupedServices,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -56,54 +100,73 @@ class _ServiceListPageState extends State<ServiceListPage> {
             return const Center(child: Text("ยังไม่มีจุดบริการ"));
           }
 
-          final data = snapshot.data!;
+          final groupedData = snapshot.data!;
+          
+          final customOrder = ['Water', 'Waste', 'Other'];
+          final sortedCategories = groupedData.keys.toList()
+            ..sort((a, b) => customOrder.indexOf(a).compareTo(customOrder.indexOf(b))); 
 
           return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, i) {
-              final item = data[i];
-              final note = item['note'];
+            itemCount: sortedCategories.length,
+            itemBuilder: (context, index) {
+              String categoryType = sortedCategories[index];
+              List<dynamic> items = groupedData[categoryType]!;
 
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: ListTile(
-                  // --- แก้ไขส่วน Leading เริ่มตรงนี้ ---
-                  leading: Icon(
-                    item['service_type'] == 'Water'
-                        ? Icons.local_drink
-                        : item['service_type'] == 'Waste'
-                            ? Icons.recycling
-                            : Icons.eco,
-                    color: item['service_type'] == 'Water'
-                        ? Colors.blue
-                        : item['service_type'] == 'Waste'
-                            ? Colors.orange // ใช้สีส้มเพื่อให้เห็นชัดกว่าเหลือง
-                            : Colors.green,
-                    size: 28,
-                  ),
-                  // --- จบส่วนที่แก้ไข ---
-                  title: Text(
-                    item['service_name'] ?? 'ไม่มีชื่อรายการ',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(item['building'] ?? 'ไม่ระบุอาคาร'),
-                      if (note != null && note.toString().trim().isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            note.toString(),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+              return Column(
+                children: [
+                  _buildCategoryHeader(categoryType, theme),
+                  
+                  ...items.map((item) {
+                    final note = item['note'];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                      child: ListTile(
+                        // ปิดความสามารถในการกด (onTap: null)
+                        onTap: null,
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: (item['service_type'] == 'Water' 
+                                    // ignore: deprecated_member_use
+                                    ? Colors.blue.withOpacity(0.2) 
+                                    : item['service_type'] == 'Waste' 
+                                      // ignore: deprecated_member_use
+                                      ? Colors.green.withOpacity(0.2) 
+                                      // ignore: deprecated_member_use
+                                      : Colors.amber.withOpacity(0.2)),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            item['service_type'] == 'Water' ? Icons.local_drink : item['service_type'] == 'Waste' ? Icons.recycling : Icons.stadium,
+                            color: item['service_type'] == 'Water' ? Colors.blue : item['service_type'] == 'Waste' ? Colors.green : const Color.fromARGB(255, 5, 194, 175),
+                            size: 24,
                           ),
                         ),
-                    ],
-                  ),
-                ),
+                        title: Text(
+                          item['service_name'] ?? 'ไม่มีชื่อรายการ',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item['building'] ?? 'ไม่ระบุอาคาร'),
+                            if (note != null && note.toString().trim().isNotEmpty)
+                              Text(
+                                note.toString(),
+                                style: TextStyle(
+                                  fontSize: 12, 
+                                  height: 1.4,
+                                  color: theme.brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[600]
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  })
+                ],
               );
             },
           );
