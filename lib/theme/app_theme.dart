@@ -10,6 +10,14 @@ class AppTheme {
       seedColor: const Color.fromARGB(255, 22, 48, 141),
       brightness: Brightness.light,
     ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      selectedItemColor: Color.fromARGB(255, 22, 48, 141),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Color.fromARGB(255, 22, 48, 141),
+      )
+    ),
     textTheme: GoogleFonts.kanitTextTheme(ThemeData.light().textTheme),
   );
 
@@ -26,8 +34,8 @@ class AppTheme {
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.black,
-      selectedItemColor: Colors.amber, // ตอนคลิก
-      unselectedItemColor: Colors.white, // ยังไม่เลือก 
+      selectedItemColor: Colors.amber, 
+      unselectedItemColor: Colors.white, 
     ),
 
     textTheme: GoogleFonts.kanitTextTheme(

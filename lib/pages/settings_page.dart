@@ -13,7 +13,7 @@ class SettingsPage extends StatelessWidget {
             fontWeight: FontWeight.bold, 
         ),
       ),
-      centerTitle: true, // ✅ จัดให้อยู่ตรงกลาง
+      centerTitle: true, 
       ),
       body: Column(
         children: [

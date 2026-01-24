@@ -11,7 +11,6 @@ class ReportDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // --- กันพังเรื่องวันที่ ---
     final rawDate = report['report_date'];
     String formattedDate = '-';
 
@@ -43,7 +42,6 @@ class ReportDetailPage extends StatelessWidget {
     );
   }
 
-  // --- Widget ที่ใจดี รับ null ได้ ---
   Widget _item(String title, String? value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),

@@ -12,7 +12,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _idController = TextEditingController();
   final _nameController = TextEditingController();
   final _passController = TextEditingController();
-  String _selectedFaculty = 'ICT';
+  String _selectedFaculty = '';
 
   Future<void> register() async {
     if (_idController.text.isEmpty || _nameController.text.isEmpty || _passController.text.isEmpty) {
@@ -67,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
             _buildTextField(_passController, "รหัสผ่าน", Icons.lock, isDarkMode, borderColor, isObscure: true),
             const SizedBox(height: 15),
             
-            // Dropdown ปรับให้เข้ากับธีม
+            // Dropdown 
             DropdownButtonFormField<String>(
               value: _selectedFaculty,
               decoration: InputDecoration(

@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchUserProfile(); // ดึงข้อมูลผู้ใช้ + คะแนน
+    _fetchUserProfile(); 
   }
 
   Future<void> _fetchUserProfile() async {
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color.fromARGB(255, 231, 232, 233),
       body: CustomScrollView(
         slivers: [
-          // ===== AppBar ใช้รูปภาพแทนพื้นหลังสี =====
+          
           SliverAppBar(
             expandedHeight: 180,
             pinned: true,
@@ -58,7 +58,8 @@ class _HomePageState extends State<HomePage> {
                     'assets/images/appbar_banner.jpg',
                     fit: BoxFit.cover,
                   ),
-                  // เงาทับรูป (ช่วยให้องค์ประกอบอื่นอ่านง่าย)
+
+                  // ignore: deprecated_member_use
                   Container(color: Colors.black.withOpacity(0.25)),
                 ],
               ),
@@ -71,7 +72,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ===== แถวหัวข้อ + token (ชิดขวา) =====
+                  
                   Row(
                     children: [
                       const Text(
@@ -106,7 +107,6 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
 
-                  // ===== จบส่วนหัว =====
                   const SizedBox(height: 15),
 
                   GridView.count(

@@ -33,7 +33,7 @@ class _ReportPageState extends State<ReportPage> {
     try {
       // 2. ส่งข้อมูลไปยัง Backend
       final response = await http.post(
-        Uri.parse('http://localhost:3000/report'), // ถ้าเทสในมือถือจริงให้ใช้ IP เครื่อง
+        Uri.parse('http://localhost:3000/report'), 
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "student_id": widget.studentId,
@@ -42,7 +42,6 @@ class _ReportPageState extends State<ReportPage> {
         }),
       );
 
-      // 3. รับคำตอบจาก Server
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
@@ -95,7 +94,7 @@ class _ReportPageState extends State<ReportPage> {
                   style: TextStyle(
                     fontSize: 15,
                   ),
-                ), // วงเล็บปิด Text ต้องอยู่หลัง TextStyle
+                ),
               ),
             ),
           ],

@@ -123,7 +123,6 @@ class _ServiceListPageState extends State<ServiceListPage> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 2,
                       child: ListTile(
-                        // ปิดความสามารถในการกด (onTap: null)
                         onTap: null,
                         leading: Container(
                           padding: const EdgeInsets.all(8),

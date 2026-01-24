@@ -99,7 +99,7 @@ class InfoPage extends StatelessWidget {
     );
   }
 
-  // ===== CARD =====
+  // card
   Widget _buildInfoCard(
     BuildContext context,
     String title,

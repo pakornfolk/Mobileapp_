@@ -34,7 +34,7 @@ class _RankingPageState extends State<RankingPage> {
 
   void _refreshRanking() {
     setState(() {
-      _rankingFuture = getRanking(); //ดึงข้อมูลใหม่จริง ๆ
+      _rankingFuture = getRanking(); 
     });
   }
 

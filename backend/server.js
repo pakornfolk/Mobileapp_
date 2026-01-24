@@ -14,10 +14,6 @@ const db = mysql.createPool({
     port: 3306
 });
 
-app.get('/', (req, res) => {
-  res.send('Server is running');
-}); // อันนี้เอาไว้เช็คตอนเปิดโครมผ่านมือถือ (*แต่เปิดตัวแอพไม่ได้นะจ้ะ)
-
 // 1. Login API
 app.post('/login', (req, res) => {
   const { student_id, password } = req.body;
@@ -47,7 +43,6 @@ app.post('/login', (req, res) => {
       });
     }
 
-    //  ส่ง response ให้ตรงกับ Flutter 100%
     return res.status(200).json({
       success: true,
       user: {
@@ -116,6 +111,7 @@ app.post('/reset-password', (req, res) => {
   );
 });
 
+//get all users
 app.get('/users', (req, res) => {
   const sql = `
     SELECT student_id, username, faculty, point
@@ -135,7 +131,7 @@ app.get('/users', (req, res) => {
   });
 });
 
-// 3. Real-time User Profile API
+// 3. User Profile API
 app.get('/user-profile/:student_id', (req, res) => {
     db.query('SELECT * FROM users WHERE student_id = ?', [req.params.student_id], (err, results) => {
         if (err) return res.status(500).json(err);
@@ -143,16 +139,15 @@ app.get('/user-profile/:student_id', (req, res) => {
     });
 });
 
-// 4. Report API (ฉบับแก้ไขให้ตรงกัน)
+// 4. Report API 
 app.post('/report', (req, res) => {
     const { student_id, issue_detail, service_type } = req.body;
 
-    // 1. เช็คข้อมูลให้ครบ (3 อย่าง)
+
     if (!student_id || !issue_detail || !service_type) {
         return res.status(400).json({ message: 'ข้อมูลไม่ครบ' });
     }
 
-    // 2. ปรับ INSERT ให้มี 3 คอลัมน์ ให้ตรงกับ 3 เครื่องหมาย ? และ 3 ตัวแปรใน [ ]
     const sqlInsert = 'INSERT INTO reports (student_id, issue_detail, service_type) VALUES (?, ?, ?)';
     
     db.query(sqlInsert, [student_id, issue_detail, service_type], (err) => {
@@ -161,7 +156,6 @@ app.post('/report', (req, res) => {
             return res.status(500).json({ message: 'Error', detail: err });
         }
 
-        // 3. ส่วนเช็คโควตา 3 ครั้งต่อวัน
         const checkLimitSql = `
             SELECT COUNT(*) as report_count 
             FROM reports 
@@ -188,8 +182,7 @@ app.post('/report', (req, res) => {
     });
 });
 
-
-// 5. Personal History API (ดึงเฉพาะของตัวเอง)
+// 5. Personal History 
 app.get('/report-history/:student_id', (req, res) => {
   const sql = `
     SELECT 
@@ -209,13 +202,13 @@ app.get('/report-history/:student_id', (req, res) => {
 });
 
 
-// 6. Ranking & Locations
+// 6. Ranking 
 app.get('/ranking', (req, res) => {
     db.query('SELECT username, faculty, point FROM users ORDER BY point DESC', (err, results) => res.json(results));
 });
 
 
-
+//7.Service_Locations
 app.get('/service-locations', (req, res) => {
   const sql = 'SELECT * FROM service_locations ORDER BY id DESC';
   db.query(sql, (err, results) => {
@@ -224,9 +217,8 @@ app.get('/service-locations', (req, res) => {
   });
 });
 
-// เพิ่มต่อท้ายไฟล์ server.js (ก่อน app.listen)
 
-// 7. API สำหรับตรวจสอบคะแนนเพื่อแลกของรางวัล (Get Point Path)
+//8. check-points
 app.get('/check-points/:student_id', (req, res) => {
     const sql = 'SELECT student_id, username, point FROM users WHERE student_id = ?';
     db.query(sql, [req.params.student_id], (err, results) => {
@@ -238,7 +230,6 @@ app.get('/check-points/:student_id', (req, res) => {
             student_id: results[0].student_id,
             username: results[0].username,
             current_points: results[0].point,
-            status: 'Ready to redeem'
         });
     });
 });

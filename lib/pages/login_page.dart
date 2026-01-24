@@ -74,7 +74,6 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
-    // ✅ กำหนดสีเส้นขอบตามโหมด
     final borderColor = isDarkMode
         ? Colors.white54
         : const Color.fromARGB(255, 22, 48, 141);
@@ -104,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 40),
 
-            // ===== รหัสนักศึกษา =====
+            //รหัสนักศึกษา 
             TextField(
               controller: _idController,
               keyboardType: TextInputType.number,
@@ -116,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                 prefixIcon: Icon(Icons.badge, color: borderColor),
                 filled: true,
                 fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-                // ✅ เอากรอบกลับมา
+                
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide(color: borderColor, width: 1.5),
@@ -130,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
 
             const SizedBox(height: 20),
 
-            // ===== รหัสผ่าน =====
+            //รหัสผ่าน
             TextField(
               controller: _passController,
               obscureText: true,
@@ -142,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                 prefixIcon: Icon(Icons.lock, color: borderColor),
                 filled: true,
                 fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-                // ✅ เอากรอกกลับมา
+                
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide(color: borderColor, width: 1.5),
@@ -154,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
 
-            // ===== ลืมรหัสผ่าน (ครบถ้วน ไม่หาย!) =====
+            // ลืมรหัสผ่าน
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -180,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
 
             const SizedBox(height: 30),
 
-            // ===== ปุ่ม Login =====
+            // Login 
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -203,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
 
             const SizedBox(height: 20),
 
-            // ===== สมัครสมาชิก =====
+            //register
             TextButton(
               onPressed: () {
                 Navigator.push(
