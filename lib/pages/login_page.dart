@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/login'),
+        Uri.parse('http://localhost:3000/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'student_id': _idController.text.trim(),
@@ -75,8 +75,8 @@ class _LoginPageState extends State<LoginPage> {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     // ✅ กำหนดสีเส้นขอบตามโหมด
-    final borderColor = isDarkMode 
-        ? Colors.white54 
+    final borderColor = isDarkMode
+        ? Colors.white54
         : const Color.fromARGB(255, 22, 48, 141);
 
     return Scaffold(
@@ -110,7 +110,9 @@ class _LoginPageState extends State<LoginPage> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: "รหัสนักศึกษา",
-                labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : borderColor),
+                labelStyle: TextStyle(
+                  color: isDarkMode ? Colors.white70 : borderColor,
+                ),
                 prefixIcon: Icon(Icons.badge, color: borderColor),
                 filled: true,
                 fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
@@ -134,7 +136,9 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: "รหัสผ่าน",
-                labelStyle: TextStyle(color: isDarkMode ? Colors.white70 : borderColor),
+                labelStyle: TextStyle(
+                  color: isDarkMode ? Colors.white70 : borderColor,
+                ),
                 prefixIcon: Icon(Icons.lock, color: borderColor),
                 filled: true,
                 fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
@@ -157,14 +161,16 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const ForgotPasswordPage(),
+                    ),
                   );
                 },
                 child: Text(
                   "ลืมรหัสผ่าน?",
                   style: TextStyle(
-                    color: isDarkMode 
-                        ? Colors.amber.withOpacity(0.8) 
+                    color: isDarkMode
+                        ? Colors.amber.withOpacity(0.8)
                         : const Color.fromARGB(255, 22, 48, 141),
                     fontWeight: FontWeight.w600,
                   ),
@@ -190,10 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text(
                         "เข้าสู่ระบบ",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
               ),
             ),
@@ -211,8 +214,8 @@ class _LoginPageState extends State<LoginPage> {
               child: Text(
                 "ยังไม่มีบัญชี? ลงทะเบียนที่นี่",
                 style: TextStyle(
-                  color: isDarkMode 
-                      ? Colors.amber 
+                  color: isDarkMode
+                      ? Colors.amber
                       : const Color.fromARGB(255, 22, 48, 141),
                 ),
               ),

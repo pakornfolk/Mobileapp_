@@ -22,9 +22,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Future<List<dynamic>> _getHistory() async {
     final res = await http.get(
-      Uri.parse(
-        'http://10.0.2.2:3000/report-history/${widget.studentId}',
-      ),
+      Uri.parse('http://localhost:3000/report-history/${widget.studentId}'),
     );
 
     if (res.statusCode == 200) {
@@ -54,9 +52,7 @@ class _HistoryPageState extends State<HistoryPage> {
             }
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text("ยังไม่มีประวัติการแจ้งปัญหา"),
-              );
+              return const Center(child: Text("ยังไม่มีประวัติการแจ้งปัญหา"));
             }
 
             return ListView.builder(
@@ -76,8 +72,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              ReportDetailPage(report: item),
+                          builder: (_) => ReportDetailPage(report: item),
                         ),
                       );
                     },
@@ -92,9 +87,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           SizedBox(width: 6),
                           Text(
                             "รายงานปัญหา",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -114,10 +107,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             ),
                           ),
                           SizedBox(width: 6),
-                          Icon(
-                            Icons.chevron_right,
-                            color: Colors.grey,
-                          ),
+                          Icon(Icons.chevron_right, color: Colors.grey),
                         ],
                       ),
                     ),

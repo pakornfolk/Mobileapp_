@@ -224,4 +224,23 @@ app.get('/service-locations', (req, res) => {
   });
 });
 
+// เพิ่มต่อท้ายไฟล์ server.js (ก่อน app.listen)
+
+// 7. API สำหรับตรวจสอบคะแนนเพื่อแลกของรางวัล (Get Point Path)
+app.get('/check-points/:student_id', (req, res) => {
+    const sql = 'SELECT student_id, username, point FROM users WHERE student_id = ?';
+    db.query(sql, [req.params.student_id], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+        if (results.length === 0) return res.status(404).json({ success: false, message: 'ไม่พบข้อมูลผู้ใช้' });
+        
+        res.json({
+            success: true,
+            student_id: results[0].student_id,
+            username: results[0].username,
+            current_points: results[0].point,
+            status: 'Ready to redeem'
+        });
+    });
+});
+
 app.listen(3000, '0.0.0.0', () => console.log('Server is running on port 3000'));

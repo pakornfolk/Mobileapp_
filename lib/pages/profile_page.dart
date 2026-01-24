@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:barcode_widget/barcode_widget.dart'; // ✅ เพิ่มตัวนี้
+
 import 'history_page.dart';
-import 'login_page.dart'; 
+import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final String studentId;
@@ -21,8 +23,6 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _loadProfile();
-
-    // 🔥 โหลดอัตโนมัติทุก 3 วินาที
     _timer = Timer.periodic(const Duration(seconds: 3), (_) {
       _loadProfile();
     });
@@ -30,20 +30,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // กัน memory leak
+    _timer?.cancel();
     super.dispose();
   }
+
+  String _generateRedeemCode(String studentId) {
+  // ใช้แค่ studentId มาทำ Hash รหัสจะออกมาเหมือนเดิมทุกครั้งสำหรับ ID นี้
+  var seed = studentId.hashCode.toString().padRight(13, '7').substring(0, 13);
+  return seed;
+}
 
   Future<void> _loadProfile() async {
     try {
       final res = await http.get(
-        Uri.parse('http://10.0.2.2:3000/user-profile/${widget.studentId}')
+        Uri.parse('http://localhost:3000/user-profile/${widget.studentId}'),
       );
 
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
-
-        // อัปเดตเฉพาะตอนข้อมูลเปลี่ยน (ลื่น + ไม่ rebuild มั่ว)
         if (mounted && (user == null || user!['point'] != data['point'])) {
           setState(() => user = data);
         }
@@ -61,6 +65,9 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _loadProfile,
@@ -69,6 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
+              // ส่วนหัว Profile
               Container(
                 height: 250,
                 width: double.infinity,
@@ -83,7 +91,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     const CircleAvatar(
                       radius: 50,
                       backgroundColor: Color.fromARGB(255, 42, 81, 224),
-                      child: Icon(Icons.person, size: 60, color: Color.fromARGB(255, 245, 209, 104)),
+                      child: Icon(
+                        Icons.person,
+                        size: 60,
+                        color: Color.fromARGB(255, 245, 209, 104),
+                      ),
                     ),
                     const SizedBox(height: 15),
                     Text(
@@ -102,11 +114,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
+              // คะแนนสะสม
               ListTile(
                 leading: const Icon(Icons.token, color: Colors.amber, size: 25),
-                title: const Text("คะแนนสะสมของคุณ",
-                    style: TextStyle(fontWeight: FontWeight.bold,
-                    fontSize: 14)),
+                title: const Text(
+                  "คะแนนสะสมของคุณ",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
                 trailing: Text(
                   "${user!['point']} pts",
                   style: const TextStyle(
@@ -117,8 +131,77 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
+              // กฎการสะสมคะแนน
+              ListTile(
+                leading: const Icon(Icons.info_outline, color: Colors.grey),
+                title: const Text(
+                  "กฎการสะสมคะแนน",
+                  style: TextStyle(fontSize: 14),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RulesPage()),
+                  );
+                },
+              ),
+
               const Divider(),
 
+              // 🎟️ ส่วนของ Redeem Code (Barcode Card) - แก้ไขตรงนี้
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.grey[900] : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.green.withOpacity(0.5)),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        "รหัสสำหรับแลกคะแนน (Redeem Code)",
+                        style: TextStyle(
+                          fontSize: 12, 
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      
+                      // BarcodeWidget
+                      BarcodeWidget(
+                        barcode: Barcode.code128(), // มาตรฐานที่เครื่องสแกนอ่านได้
+                        data: _generateRedeemCode(widget.studentId),
+                        width: 200,
+                        height: 70,
+                        drawText: false, // ไม่วาดเลขใต้บาร์โค้ดเพราะเรามี Text แยกด้านล่าง
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                      
+                      const SizedBox(height: 15),
+                      Text(
+                        _generateRedeemCode(widget.studentId),
+                        style: TextStyle(
+                          fontSize: 22,
+                          letterSpacing: 4,
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      const Text(
+                        "แลกคะแนน",
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const Divider(),
+
+              // ประวัติ
               ListTile(
                 leading: const Icon(Icons.history, color: Colors.blue),
                 title: const Text("ประวัติการแจ้งปัญหา"),
@@ -127,24 +210,24 @@ class _ProfilePageState extends State<ProfilePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          HistoryPage(studentId: widget.studentId),
+                      builder: (_) => HistoryPage(studentId: widget.studentId),
                     ),
                   );
                 },
               ),
 
+              // ออกจากระบบ
               Padding(
-                padding: const EdgeInsets.only(top: 80, left: 30, right: 30),
+                padding: const EdgeInsets.only(top: 40, left: 30, right: 30, bottom: 30),
                 child: SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Color.fromARGB(255, 22, 48, 141), // สีกรอบ
+                      side: BorderSide(
+                        color: isDarkMode ? Colors.red.withOpacity(0.5) : const Color.fromARGB(255, 22, 48, 141),
                         width: 2,
                       ),
-                      foregroundColor: Colors.red, // สี icon + text
+                      foregroundColor: Colors.red,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () {
@@ -160,11 +243,52 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// 📖 หน้ากฎการสะสมคะแนน
+class RulesPage extends StatelessWidget {
+  const RulesPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final TextStyle ruleStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w300, 
+      color: isDarkMode ? Colors.white : Colors.grey[800],
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("กฎการสะสมคะแนน", style: TextStyle(fontSize: 18)),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("• แจ้งปัญหาขยะ/น้ำเสีย รับ 10 คะแนน", style: ruleStyle),
+            const SizedBox(height: 15),
+            Text("• จำกัดสิทธิ์การรับคะแนนสูงสุด 3 ครั้งต่อวัน", style: ruleStyle),
+            const SizedBox(height: 15),
+            Text("• คะแนนจะอัปเดตเข้าสู่ระบบโดยอัตโนมัติ", style: ruleStyle),
+            const SizedBox(height: 15),
+            Text("• สามารถแสดงรหัส Redeem เพื่อแลกรางวัล ณ สำนักงาน", style: ruleStyle),
+            const SizedBox(height: 30),
+            const Text(
+              "* เงื่อนไขเป็นไปตามที่มหาวิทยาลัยกำหนด",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
         ),
       ),
     );

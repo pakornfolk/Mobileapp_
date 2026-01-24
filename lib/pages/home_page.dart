@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchUserProfile() async {
     try {
       final res = await http.get(
-        Uri.parse('http://10.0.2.2:3000/user-profile/${widget.studentId}'),
+        Uri.parse('http://localhost:3000/user-profile/${widget.studentId}'),
       );
 
       if (res.statusCode == 200) {
@@ -59,9 +59,7 @@ class _HomePageState extends State<HomePage> {
                     fit: BoxFit.cover,
                   ),
                   // เงาทับรูป (ช่วยให้องค์ประกอบอื่นอ่านง่าย)
-                  Container(
-                    color: Colors.black.withOpacity(0.25),
-                  ),
+                  Container(color: Colors.black.withOpacity(0.25)),
                 ],
               ),
             ),
@@ -73,7 +71,6 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   // ===== แถวหัวข้อ + token (ชิดขวา) =====
                   Row(
                     children: [
@@ -108,8 +105,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  // ===== จบส่วนหัว =====
 
+                  // ===== จบส่วนหัว =====
                   const SizedBox(height: 15),
 
                   GridView.count(
@@ -126,7 +123,6 @@ class _HomePageState extends State<HomePage> {
                         Colors.orange,
                         ReportPage(studentId: widget.studentId),
                         true,
-                        
                       ),
                       _buildMenuCard(
                         context,
@@ -135,7 +131,6 @@ class _HomePageState extends State<HomePage> {
                         Colors.blue,
                         HistoryPage(studentId: widget.studentId),
                         false,
-                        
                       ),
                       _buildMenuCard(
                         context,
@@ -144,7 +139,6 @@ class _HomePageState extends State<HomePage> {
                         Colors.green,
                         const InfoPage(),
                         false,
-                    
                       ),
                       _buildMenuCard(
                         context,
