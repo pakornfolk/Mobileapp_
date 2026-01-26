@@ -23,7 +23,7 @@ class _RankingPageState extends State<RankingPage> {
 
   Future<List<dynamic>> getRanking() async {
     final response =
-        await http.get(Uri.parse('http://localhost:3000/ranking'));
+        await http.get(Uri.parse('http://192.168.1.190:3000/ranking'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);

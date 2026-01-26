@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:barcode_widget/barcode_widget.dart'; // ✅ เพิ่มตัวนี้
+import 'package:barcode_widget/barcode_widget.dart';
 
 import 'history_page.dart';
 import 'login_page.dart';
+import 'rule_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final String studentId;
@@ -35,15 +36,15 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   String _generateRedeemCode(String studentId) {
-  // ใช้แค่ studentId มาทำ Hash รหัสจะออกมาเหมือนเดิมทุกครั้งสำหรับ ID นี้
-  var seed = studentId.hashCode.abs().toString().padRight(10, '0').substring(0, 10);
-  return seed;
-}
+    var seed =
+        studentId.hashCode.abs().toString().padRight(10, '0').substring(0, 10);
+    return seed;
+  }
 
   Future<void> _loadProfile() async {
     try {
       final res = await http.get(
-        Uri.parse('http://localhost:3000/user-profile/${widget.studentId}'),
+        Uri.parse('http://192.168.1.190:3000/user-profile/${widget.studentId}'),
       );
 
       if (res.statusCode == 200) {
@@ -136,8 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: const Icon(Icons.info_outline, color: Colors.grey),
                 title: const Text(
                   "กฎการสะสมคะแนน",
-                  style: 
-                  TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
@@ -153,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const Divider(),
 
-              //Redeem Code 
+              //Redeem Code
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Container(
@@ -168,22 +168,17 @@ class _ProfilePageState extends State<ProfilePage> {
                       const Text(
                         "รหัสสำหรับแลกคะแนน (Redeem Code)",
                         style: TextStyle(
-                          fontSize: 12, 
-                          fontWeight: FontWeight.bold
-                        ),
+                            fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 15),
-                      
-                      // BarcodeWidget
                       BarcodeWidget(
-                        barcode: Barcode.code128(), // มาตรฐานที่เครื่องสแกนอ่านได้
+                        barcode: Barcode.code128(),
                         data: _generateRedeemCode(widget.studentId),
                         width: 200,
                         height: 70,
-                        drawText: false, // ไม่วาดเลขใต้บาร์โค้ดเพราะเรามี Text แยกด้านล่าง
+                        drawText: false,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
-                      
                       const SizedBox(height: 15),
                       Text(
                         _generateRedeemCode(widget.studentId),
@@ -220,23 +215,77 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // ออกจากระบบ
               Padding(
-                padding: const EdgeInsets.only(top: 40, left: 30, right: 30, bottom: 30),
+                padding: const EdgeInsets.only(
+                    top: 40, left: 30, right: 30, bottom: 30),
                 child: SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(
-                        color: isDarkMode ? Colors.red.withOpacity(0.5) : const Color.fromARGB(255, 22, 48, 141),
+                        color: isDarkMode
+                            ? Colors.red.withOpacity(0.5)
+                            : const Color.fromARGB(255, 22, 48, 141),
                         width: 2,
                       ),
                       foregroundColor: Colors.red,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                        (route) => false,
+                      // ✅ ป๊อปอัพยืนยัน
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor:
+                                isDarkMode ? Colors.grey[900] : Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            title: Text(
+                              "ยืนยันการออกจากระบบ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            content: Text(
+                              "คุณต้องการออกจากระบบใช่หรือไม่?",
+                              style: TextStyle(
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black87,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(
+                                  "ยกเลิก",
+                                  style: TextStyle(
+                                      color: isDarkMode
+                                          ? Colors.grey[400]
+                                          : Colors.grey[600]),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const LoginPage()),
+                                    (route) => false,
+                                  );
+                                },
+                                child: const Text(
+                                  "ออกจากระบบ",
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
                     icon: const Icon(Icons.logout),
@@ -249,53 +298,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// อันนี้คือหน้ากฎการสะสมคะแนน
-class RulesPage extends StatelessWidget {
-  const RulesPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final TextStyle ruleStyle = TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w300, 
-      color: isDarkMode ? Colors.white : const Color.fromARGB(255, 52, 51, 51),
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("กฎการสะสมคะแนน", 
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          ),
-
-        ),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("• แจ้งปัญหาต่างๆ รับ 10 คะแนน", style: ruleStyle),
-            const SizedBox(height: 15),
-            Text("• จำกัดสิทธิ์การรับคะแนนสูงสุด 3 ครั้งต่อวัน", style: ruleStyle),
-            const SizedBox(height: 15),
-            Text("• คะแนนจะอัปเดตเข้าสู่บัญชีของนักศึกษาโดยอัตโนมัติ", style: ruleStyle),
-            const SizedBox(height: 15),
-            Text("• สามารถแสดงรหัส Redeem เพื่อแลกรางวัล ณ สำนักงาน", style: ruleStyle),
-            const SizedBox(height: 30),
-            const Text(
-              "* หมายเหตุ หากพบว่ามีการปั่นคะแนนเกิดขึ้น หรือ แจ้งข้อมูลอันเป็นเท็จ ทางเราขอทำการตัดแต้มครึ่งนึงจากจำนวนเเต้มทั้งหมด เงื่อนไขเป็นไปตามที่มหาวิทยาลัยกำหนด",
-              style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 149, 148, 148)),
-            ),
-          ],
         ),
       ),
     );

@@ -14,6 +14,10 @@ const db = mysql.createPool({
     port: 3306
 });
 
+app.get('/', (req, res)=> {
+  res.send("server is running"); //เอาไว้เช็คกับมือถือว่ามันเชื่อมกับมือถือยัง
+});
+
 // 1. Login API
 app.post('/login', (req, res) => {
   const { student_id, password } = req.body;

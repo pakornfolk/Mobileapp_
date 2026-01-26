@@ -25,9 +25,8 @@ class _ServiceListPageState extends State<ServiceListPage> {
   }
 
   Future<Map<String, List<dynamic>>> _fetchAndGroupServices() async {
-    // 💡 ใช้ 10.0.2.2 สำหรับ Android Emulator / localhost สำหรับ iOS
     final res = await http.get(
-      Uri.parse('http://localhost:3000/service-locations'),
+      Uri.parse('http://192.168.1.190:3000/service-locations'),
     );
 
     if (res.statusCode == 200) {
