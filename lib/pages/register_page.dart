@@ -12,7 +12,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _idController = TextEditingController();
   final _nameController = TextEditingController();
   final _passController = TextEditingController();
-  String _selectedFaculty = '';
+  String? _selectedFaculty;
 
   Future<void> register() async {
     if (_idController.text.isEmpty || _nameController.text.isEmpty || _passController.text.isEmpty) {
