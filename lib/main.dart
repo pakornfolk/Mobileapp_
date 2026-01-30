@@ -4,9 +4,10 @@ import 'pages/home_page.dart';
 import 'pages/service_locations_page.dart';
 import 'pages/announcement_page.dart';
 import 'pages/profile_page.dart';
-import 'pages/login_page.dart';
+
 import 'pages/settings_page.dart';
 import 'theme/app_theme.dart';
+import 'pages/splash_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
-      home: const LoginPage(),
+      home: const SplashPage(),
     );
   }
 }
