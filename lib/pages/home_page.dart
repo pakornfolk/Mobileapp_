@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                       _buildMenuCard(
                         context,
                         Icons.report_gmailerrorred_rounded,
-                        "แจ้งปัญหา",
+                        "แจ้งปัญหา / แจ้งของหาย",
                         Colors.orange,
                         ReportPage(studentId: widget.studentId),
                         true,
