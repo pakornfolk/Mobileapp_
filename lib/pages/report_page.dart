@@ -18,6 +18,7 @@ class _ReportPageState extends State<ReportPage> {
   final List<String> _serviceTypes = [
     'ตู้กดน้ำดื่ม',
     'จุดแยกขยะ',
+    'แจ้งของหาย'
     'อื่นๆ',
   ];
 
@@ -75,13 +76,13 @@ class _ReportPageState extends State<ReportPage> {
               value: _selectedServiceType,
               items: _serviceTypes.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
               onChanged: (value) => setState(() => _selectedServiceType = value),
-              decoration: const InputDecoration(labelText: "เลือกประเภทจุดบริการ", border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: "เลือกประเภท", border: OutlineInputBorder()),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: _detailController,
               maxLines: 4,
-              decoration: const InputDecoration(labelText: "รายละเอียด / ตำแหน่ง", border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: "รายละเอียด / ตำแหน่ง ที่ต้องการแจ้ง", border: OutlineInputBorder()),
             ),
             const SizedBox(height: 30),
             SizedBox(
