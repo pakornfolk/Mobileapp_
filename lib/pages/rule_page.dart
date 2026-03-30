@@ -51,7 +51,7 @@ class RulesPage extends StatelessWidget {
                   fontSize: 12, color: Color.fromARGB(255, 255, 1, 1)),
             ),
             const Text(
-              "\n* ของรางวัลเปลี่ยนทุก 1 สัปดาห์ ยกเว้น ชั่วโมงกิจกรรม *",
+              "\n* ของรางวัลเปลี่ยนทุก 1 เดือน ยกเว้น ชั่วโมงกิจกรรม *",
               style: TextStyle(
                   fontSize: 12, color: Color.fromARGB(255, 255, 0, 0)),
             ),

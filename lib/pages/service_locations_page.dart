@@ -26,7 +26,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
 
   Future<Map<String, List<dynamic>>> _fetchAndGroupServices() async {
     final res = await http.get(
-      Uri.parse('http://192.168.1.190:3000/service-locations'),
+      Uri.parse('http://localhost:3000/service-locations'),
     );
 
     if (res.statusCode == 200) {

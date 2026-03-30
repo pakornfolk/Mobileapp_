@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
@@ -7,15 +9,15 @@ app.use(express.json());
 app.use(cors());
 
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'user',
-    password: 'pakorn2549',
-    database: 'reportapp',
-    port: 3306
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
 });
 
 app.get('/', (req, res)=> {
-  res.send("server is running"); //เอาไว้เช็คกับมือถือว่ามันเชื่อมกับมือถือยัง
+  res.send("server is running"); 
 });
 
 // 1. Login API
@@ -25,7 +27,7 @@ app.post('/login', (req, res) => {
   if (!student_id || !password) {
     return res.status(400).json({
       success: false,
-      message: 'กรุณากรอกข้อมูลให้ครบ',
+      message: 'กรุณากรอกข้อมูลให้ครบถ้วน',
     });
   }
 
@@ -76,7 +78,7 @@ app.post('/reset-password', (req, res) => {
   if (!student_id || !new_password) {
     return res.status(400).json({
       success: false,
-      message: 'ข้อมูลไม่ครบ',
+      message: 'ข้อมูลไม่ครบถ้วน',
     });
   }
 
@@ -195,7 +197,7 @@ app.get('/report-history/:student_id', (req, res) => {
       report_date
     FROM reports
     WHERE student_id = ?
-    ORDER BY report_id DESC
+    ORDER BY report_id 
   `;
 
   db.query(sql, [req.params.student_id], (err, results) => {
@@ -237,4 +239,6 @@ app.get('/check-points/:student_id', (req, res) => {
     });
 });
 
-app.listen(3000, '0.0.0.0', () => console.log('Server is running on port 3000'));
+app.listen(process.env.PORT, '0.0.0.0', () => 
+  console.log(`Server is running on port ${process.env.PORT}`)
+);

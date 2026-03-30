@@ -36,7 +36,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     try {
       final res = await http.post(
-        Uri.parse('http://192.168.1.190:3000/reset-password'),
+        Uri.parse('http://localhost:3000/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'student_id': _idController.text.trim(),
