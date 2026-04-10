@@ -7,6 +7,7 @@ import 'dart:convert';
 import '../main.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
+import 'package:mb_app/apiconfig/api_config.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
 
   try {
     final response = await http.post(
-      Uri.parse('http://localhost:3000/login'),
+      Uri.parse('${ApiConfig.baseUrl}/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'student_id': _idController.text.trim(),

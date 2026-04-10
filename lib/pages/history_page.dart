@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'reportdetail_page.dart';
+import 'package:mb_app/apiconfig/api_config.dart';
+
 
 class HistoryPage extends StatefulWidget {
   final String studentId;
@@ -22,7 +24,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Future<List<dynamic>> _getHistory() async {
     final res = await http.get(
-      Uri.parse('http://localhost:3000/report-history/${widget.studentId}'),
+      Uri.parse('${ApiConfig.baseUrl}/report-history/${widget.studentId}'),
     );
 
     if (res.statusCode == 200) {

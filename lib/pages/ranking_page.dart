@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'report_page.dart';
+import 'package:mb_app/apiconfig/api_config.dart';
 
 class RankingPage extends StatefulWidget {
   final String studentId;
@@ -23,7 +24,7 @@ class _RankingPageState extends State<RankingPage> {
 
   Future<List<dynamic>> fetchRanking() async {
     final response =
-        await http.get(Uri.parse('http://localhost:3000/ranking'));
+        await http.get(Uri.parse('${ApiConfig.baseUrl}/ranking'));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

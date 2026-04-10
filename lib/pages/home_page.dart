@@ -6,6 +6,7 @@ import 'report_page.dart';
 import 'history_page.dart';
 import 'info_page.dart';
 import 'ranking_page.dart';
+import 'package:mb_app/apiconfig/api_config.dart';
 
 class HomePage extends StatefulWidget {
   final String studentId;
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchUserProfile() async {
     try {
       final res = await http.get(
-        Uri.parse('http://localhost:3000/user-profile/${widget.studentId}'),
+        Uri.parse('${ApiConfig.baseUrl}/user-profile/${widget.studentId}'),
       );
 
       if (res.statusCode == 200) {

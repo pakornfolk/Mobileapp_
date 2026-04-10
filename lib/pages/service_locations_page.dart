@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mb_app/apiconfig/api_config.dart';
 
 class ServiceListPage extends StatefulWidget {
   const ServiceListPage({super.key});
@@ -15,60 +16,96 @@ class _ServiceListPageState extends State<ServiceListPage> {
   @override
   void initState() {
     super.initState();
-    _servicesRequest();
+    _groupedServices = _fetchAndGroupServices();
   }
 
-  void _servicesRequest() {
-    setState(() {
-      _groupedServices = _fetchAndGroupServices();
-    });
+  String normalize(String? type) {
+    return type?.toString().trim().toLowerCase() ?? 'unknown';
+  }
+
+  String getTitle(String type) {
+    switch (type) {
+      case 'water':
+        return "ตู้กดน้ำ";
+      case 'waste':
+        return "จุดแยกขยะ";
+      case 'health':
+        return "ด้านสุขภาพ";
+      case 'shuttle bus':
+        return "การเดินทาง";
+      default:
+        return 'สนามกีฬา';
+    }
+  }
+
+
+  IconData getIcon(String type) {
+    switch (type) {
+      case 'water':
+        return Icons.local_drink;
+      case 'waste':
+        return Icons.recycling;
+      case 'health':
+        return Icons.heart_broken;
+      case 'shuttle bus':
+        return Icons.directions_bus;
+      default:
+        return Icons.stadium;
+    }
+  }
+
+  Color getColor(String type) {
+    switch (type) {
+      case 'water':
+        return Colors.blue;
+      case 'waste':
+        return Colors.green;
+      case 'health':
+        return Colors.red;
+      case 'shuttle bus':
+        return Colors.indigo;
+      default:
+        return Colors.amber;
+    }
   }
 
   Future<Map<String, List<dynamic>>> _fetchAndGroupServices() async {
     final res = await http.get(
-      Uri.parse('http://localhost:3000/service-locations'),
+      Uri.parse('${ApiConfig.baseUrl}/service-locations'),
     );
 
     if (res.statusCode == 200) {
       List<dynamic> data = json.decode(res.body);
-      
+
       Map<String, List<dynamic>> grouped = {};
+
       for (var item in data) {
-        String type = item['service_type'] ?? 'ไม่ระบุ';
-        if (grouped[type] == null) {
-          grouped[type] = [];
-        }
+        final type = normalize(item['service_type']);
+
+        grouped.putIfAbsent(type, () => []);
         grouped[type]!.add(item);
       }
+
       return grouped;
     } else {
       throw Exception('โหลดข้อมูลไม่สำเร็จ');
     }
   }
 
-  Widget _buildCategoryHeader(String type, ThemeData theme) {
-    String title = "การเดินทาง";
-    if (type == 'Water') title = "ตู้กดน้ำ";
-    if (type == 'Waste') title = "จุดแยกขยะ";
-    if (type == 'Health') title = "ด้านสุขภาพ";
-    if (type == 'Stadium') title = "สนามกีฬา";
-
+  Widget buildHeader(String type, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 10),
       child: Row(
         children: [
-          Expanded(child: Divider(indent: 15, endIndent: 10, thickness: 1, color: theme.dividerColor)),
+          Expanded(child: Divider()),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                color: theme.colorScheme.secondary,
-              ),
+              getTitle(type),
+              style: TextStyle(color: theme.colorScheme.secondary),
             ),
           ),
-          Expanded(child: Divider(indent: 10, endIndent: 15, thickness: 1, color: theme.dividerColor)),
+          Expanded(child: Divider()),
         ],
       ),
     );
@@ -80,10 +117,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "จุดบริการในมหาวิทยาลัย",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
+        title: const Text("จุดบริการในมหาวิทยาลัย"),
         centerTitle: true,
       ),
       body: FutureBuilder<Map<String, List<dynamic>>>(
@@ -94,77 +128,64 @@ class _ServiceListPageState extends State<ServiceListPage> {
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text("เกิดข้อผิดพลาด: ${snapshot.error}"));
+            return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("ยังไม่มีจุดบริการ"));
+          final data = snapshot.data ?? {};
+
+          if (data.isEmpty) {
+            return const Center(child: Text("ไม่มีข้อมูล"));
           }
 
-          final groupedData = snapshot.data!;
-          
-          final customOrder = ['Water', 'Waste', 'Health','Stadium','Shuttle bus'];
-          final sortedCategories = groupedData.keys.toList()
-            ..sort((a, b) => customOrder.indexOf(a).compareTo(customOrder.indexOf(b))); 
+          final order = [
+            'water',
+            'waste',
+            'health',
+            'stadium',
+            'shuttle bus'
+          ];
 
-          return ListView.builder(
-            itemCount: sortedCategories.length,
-            itemBuilder: (context, index) {
-              String categoryType = sortedCategories[index];
-              List<dynamic> items = groupedData[categoryType]!;
+          final categories = data.keys.toList()
+            ..sort((a, b) {
+              final ai = order.indexOf(a);
+              final bi = order.indexOf(b);
+              return (ai == -1 ? 999 : ai)
+                  .compareTo(bi == -1 ? 999 : bi);
+            });
+
+          return ListView(
+            children: categories.map((type) {
+              final items = data[type]!;
 
               return Column(
                 children: [
-                  _buildCategoryHeader(categoryType, theme),
-                  
+                  buildHeader(type, theme),
+
                   ...items.map((item) {
+                    final color = getColor(type);
                     final note = item['note'];
+
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 2,
                       child: ListTile(
-                        onTap: null,
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: (item['service_type'] == 'Water' 
-                                    // ignore: deprecated_member_use
-                                    ? Colors.blue.withOpacity(0.2) 
-                                    : item['service_type'] == 'Waste' 
-                                      // ignore: deprecated_member_use
-                                      ? Colors.green.withOpacity(0.2) 
-                                        : item['service_type'] == 'Health' 
-                                      // ignore: deprecated_member_use
-                                        ? const Color.fromARGB(255, 221, 8, 8).withOpacity(0.2)
-                                          : item['service_type'] == 'Stadium' 
-                                      // ignore: deprecated_member_use
-                                          ? Colors.amber.withOpacity(0.2) 
-                                      // ignore: deprecated_member_use
-                                            : const Color.fromARGB(255, 7, 27, 204).withOpacity(0.2)),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            item['service_type'] == 'Water' ? Icons.local_drink : item['service_type'] == 'Waste' ? Icons.recycling : item['service_type'] == 'Health' ? Icons.heart_broken : item['service_type'] == 'Stadium' ? Icons.stadium : Icons.car_crash,
-                            color: item['service_type'] == 'Water' ? Colors.blue : item['service_type'] == 'Waste' ? Colors.green : item['service_type'] == 'Health' ? Colors.red : item['service_type'] == 'Stadium' ? Color.fromARGB(255, 5, 194, 175) :Color.fromARGB(255, 255, 255, 255),
-                            size: 24,
-                          ),
+                        leading: CircleAvatar(
+                          backgroundColor: color.withOpacity(0.2),
+                          child: Icon(getIcon(type), color: color),
                         ),
                         title: Text(
-                          item['service_name'] ?? 'ไม่มีชื่อรายการ',
+                          item['service_name'] ?? '-',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item['building'] ?? 'ไม่ระบุอาคาร'),
+                            Text(item['building'] ?? '-'),
                             if (note != null && note.toString().trim().isNotEmpty)
                               Text(
                                 note.toString(),
                                 style: TextStyle(
-                                  fontSize: 12, 
-                                  height: 1.4,
-                                  color: theme.brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[600]
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
                                 ),
                               ),
                           ],
@@ -174,7 +195,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                   })
                 ],
               );
-            },
+            }).toList(),
           );
         },
       ),

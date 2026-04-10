@@ -7,6 +7,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'history_page.dart';
 import 'login_page.dart';
 import 'rule_page.dart';
+import 'package:mb_app/apiconfig/api_config.dart';
 
 class ProfilePage extends StatefulWidget {
   final String studentId;
@@ -44,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadProfile() async {
     try {
       final res = await http.get(
-        Uri.parse('http://localhost:3000/user-profile/${widget.studentId}'),
+        Uri.parse('${ApiConfig.baseUrl}/user-profile/${widget.studentId}'),
       );
 
       if (res.statusCode == 200) {

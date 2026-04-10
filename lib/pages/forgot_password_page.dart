@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mb_app/apiconfig/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -36,7 +37,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
     try {
       final res = await http.post(
-        Uri.parse('http://localhost:3000/reset-password'),
+        Uri.parse('${ApiConfig.baseUrl}/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'student_id': _idController.text.trim(),
@@ -81,9 +82,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDarkMode 
-        ? Colors.white54 
-        : const Color.fromARGB(255, 22, 48, 141);
+    final borderColor =
+        isDarkMode ? Colors.white54 : const Color.fromARGB(255, 22, 48, 141);
 
     return Scaffold(
       appBar: AppBar(title: const Text('ลืมรหัสผ่าน')),
@@ -93,15 +93,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           children: [
             const Icon(Icons.lock_reset, size: 80, color: Colors.green),
             const SizedBox(height: 30),
-            
-            _buildTextField(_idController, 'รหัสนักศึกษา', Icons.badge, isDarkMode, borderColor, TextInputType.number),
+            _buildTextField(_idController, 'รหัสนักศึกษา', Icons.badge,
+                isDarkMode, borderColor, TextInputType.number),
             const SizedBox(height: 15),
-            _buildTextField(_newPassController, 'รหัสผ่านใหม่', Icons.lock_outline, isDarkMode, borderColor, TextInputType.text, isObscure: true),
+            _buildTextField(_newPassController, 'รหัสผ่านใหม่',
+                Icons.lock_outline, isDarkMode, borderColor, TextInputType.text,
+                isObscure: true),
             const SizedBox(height: 15),
-            _buildTextField(_confirmPassController, 'ยืนยันรหัสผ่านใหม่', Icons.lock_clock, isDarkMode, borderColor, TextInputType.text, isObscure: true),
-            
+            _buildTextField(_confirmPassController, 'ยืนยันรหัสผ่านใหม่',
+                Icons.lock_clock, isDarkMode, borderColor, TextInputType.text,
+                isObscure: true),
             const SizedBox(height: 30),
-
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -109,11 +111,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 onPressed: _loading ? null : resetPassword,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 22, 48, 141),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
                 ),
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('ยืนยันเปลี่ยนรหัสผ่าน', style: TextStyle(color: Colors.white, fontSize: 18)),
+                    : const Text('ยืนยันเปลี่ยนรหัสผ่าน',
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
               ),
             ),
           ],
@@ -122,7 +126,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, bool isDark, Color borderColor, TextInputType type, {bool isObscure = false}) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      IconData icon, bool isDark, Color borderColor, TextInputType type,
+      {bool isObscure = false}) {
     return TextField(
       controller: controller,
       obscureText: isObscure,
