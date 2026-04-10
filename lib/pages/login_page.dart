@@ -1,4 +1,4 @@
-// login_page.dart (ฉบับเต็ม - ปรับปรุง UI และแก้เส้นขอบ)
+// login_page.dart 
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> loginProcess() async {
   if (_idController.text.trim().isEmpty ||
@@ -133,20 +134,28 @@ class _LoginPageState extends State<LoginPage> {
             ),
 
             const SizedBox(height: 20),
-
-            //รหัสผ่าน
             TextField(
               controller: _passController,
-              obscureText: true,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: "รหัสผ่าน",
-                labelStyle: TextStyle(
-                  color: isDarkMode ? Colors.white70 : borderColor,
-                ),
                 prefixIcon: Icon(Icons.lock, color: borderColor),
+
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                    color: borderColor,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+
                 filled: true,
                 fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-                
+
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                   borderSide: BorderSide(color: borderColor, width: 1.5),
@@ -157,7 +166,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-
             // ลืมรหัสผ่าน
             Align(
               alignment: Alignment.centerRight,
