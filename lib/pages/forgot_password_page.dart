@@ -14,7 +14,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _idController = TextEditingController();
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
+
   bool _loading = false;
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
 
   Future<void> resetPassword() async {
     if (_idController.text.trim().isEmpty ||
@@ -93,17 +96,52 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           children: [
             const Icon(Icons.lock_reset, size: 80, color: Colors.green),
             const SizedBox(height: 30),
-            _buildTextField(_idController, 'รหัสนักศึกษา', Icons.badge,
-                isDarkMode, borderColor, TextInputType.number),
+
+            _buildTextField(
+              _idController,
+              'รหัสนักศึกษา',
+              Icons.badge,
+              isDarkMode,
+              borderColor,
+              TextInputType.number,
+            ),
+
             const SizedBox(height: 15),
-            _buildTextField(_newPassController, 'รหัสผ่านใหม่',
-                Icons.lock_outline, isDarkMode, borderColor, TextInputType.text,
-                isObscure: true),
+
+            //รหัสผ่านใหม่
+            _buildPasswordField(
+              controller: _newPassController,
+              label: 'รหัสผ่านใหม่',
+              icon: Icons.lock_outline,
+              isDark: isDarkMode,
+              borderColor: borderColor,
+              obscure: _obscureNewPassword,
+              onToggle: () {
+                setState(() {
+                  _obscureNewPassword = !_obscureNewPassword;
+                });
+              },
+            ),
+
             const SizedBox(height: 15),
-            _buildTextField(_confirmPassController, 'ยืนยันรหัสผ่านใหม่',
-                Icons.lock_clock, isDarkMode, borderColor, TextInputType.text,
-                isObscure: true),
+
+            // ยืนยันรหัสผ่าน
+            _buildPasswordField(
+              controller: _confirmPassController,
+              label: 'ยืนยันรหัสผ่านใหม่',
+              icon: Icons.lock_clock,
+              isDark: isDarkMode,
+              borderColor: borderColor,
+              obscure: _obscureConfirmPassword,
+              onToggle: () {
+                setState(() {
+                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                });
+              },
+            ),
+
             const SizedBox(height: 30),
+
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -112,12 +150,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 22, 48, 141),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
                 child: _loading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('ยืนยันเปลี่ยนรหัสผ่าน',
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    : const Text(
+                        'ยืนยันเปลี่ยนรหัสผ่าน',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
               ),
             ),
           ],
@@ -126,17 +167,60 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label,
-      IconData icon, bool isDark, Color borderColor, TextInputType type,
-      {bool isObscure = false}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon,
+    bool isDark,
+    Color borderColor,
+    TextInputType type,
+  ) {
     return TextField(
       controller: controller,
-      obscureText: isObscure,
       keyboardType: type,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: borderColor),
         labelStyle: TextStyle(color: isDark ? Colors.white70 : borderColor),
+        filled: true,
+        fillColor: isDark ? Colors.grey[900] : Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: borderColor, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: borderColor, width: 2.5),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required bool isDark,
+    required Color borderColor,
+    required bool obscure,
+    required VoidCallback onToggle,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: borderColor),
+        labelStyle: TextStyle(color: isDark ? Colors.white70 : borderColor),
+
+        suffixIcon: IconButton(
+          icon: Icon(
+            obscure ? Icons.visibility : Icons.visibility_off,
+            color: borderColor,
+          ),
+          onPressed: onToggle,
+        ),
+
         filled: true,
         fillColor: isDark ? Colors.grey[900] : Colors.white,
         enabledBorder: OutlineInputBorder(
