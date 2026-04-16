@@ -19,7 +19,7 @@ class _ReportPageState extends State<ReportPage> {
   final List<String> _serviceTypes = [
     'ตู้กดน้ำดื่ม',
     'จุดแยกขยะ',
-    'แจ้งของหาย',
+    'สถานที่',
     'อื่นๆ',
   ];
 
